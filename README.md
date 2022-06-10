@@ -73,16 +73,12 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-
-![](images/9d388ebacfb8417c4566902f714d3e09.jpeg)
-
 ### Assembling ver. 1 system.
 
 <p align="Center">
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/f7eedbf5f4ca087268f1d76b12a5db2a.jpeg">
 </p>
 
-<br/>
 <br/>
 
 <p align="Center">
@@ -92,9 +88,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-![](images/f7eedbf5f4ca087268f1d76b12a5db2a.jpeg)
-
-![](images/171357ff35640d9dc3c4047a2f29333c.jpeg)
 
 ### Version 1.0 completed
 
@@ -102,7 +95,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/02dcefdb7e5eea76cb40dc7a3868d732.jpeg">
 </p>
 
-<br/>
 <br/>
 
 <p align="Center">
@@ -112,17 +104,12 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-![](images/02dcefdb7e5eea76cb40dc7a3868d732.jpeg)
-
-![](images/e37f7464d839af581979ec15eb30d827.jpeg)
-
 ### Upgrading to ver. 2.0
 
 <p align="Center">
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/af5d03618712d2e5069a821a6ada92b9.jpeg">
 </p>
 
-<br/>
 <br/>
 
 <p align="Center">
@@ -132,11 +119,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-
-![](images/af5d03618712d2e5069a821a6ada92b9.jpeg)
-
-![](images/4266169d7aa75448afd3d20935274a08.jpeg)
-
 ### ver. 2.0 installed
 
 
@@ -145,7 +127,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 </p>
 
 <br/>
-<br/>
 
 <p align="Center">
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/d6f7f290c4efc46ee3d61d01c9a8625c.jpeg">
@@ -153,12 +134,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 
 <br/>
 <br/>
-
-
-![](images/5271e4fcdbb2cffbff6aa26edf78f724.jpeg)
-
-![](images/d6f7f290c4efc46ee3d61d01c9a8625c.jpeg)
-
 
 ### HMI Interface
 <br/>
@@ -172,8 +147,6 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-![](images/eaf3e9bba1395512a6107e3924d26f5d.png)
-
 **Ignition switch**
 
 <p align="Center">
@@ -183,27 +156,12 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-![](images/a88818149587a8f79bd5a79bc5407ab1.png)
-
 **Ambient lights control**
 
-<p align="Center">
+<p float="left">
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/f5322579174f9958e9a22e8f3bbb16b5.png">
-</p>
-
-<br/>
-<br/>
-
-<p align="Center">
   <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/03946da73d038f187458a8008e1b53a4.png">
 </p>
-
-<br/>
-<br/>
-
-![](images/f5322579174f9958e9a22e8f3bbb16b5.png)
-
-![](images/03946da73d038f187458a8008e1b53a4.png)
 
 **Reverse sensor display**
 
@@ -214,8 +172,4 @@ Build a in-vehicle digital infotainment system that provide car telematics, diag
 <br/>
 <br/>
 
-
-![](images/52b4b8d50843daac27cac4ed1621e7ac.png)
-
 > For more detailed pics please see wiki.
-
