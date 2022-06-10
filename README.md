@@ -6,7 +6,7 @@ A personal project for my car which enhances the personal user and passenger exp
 
 ## Project Objective
 
-Build a in-vehicle digital infotainment system that provide car telematics, diagnosis, full blown android-based media center for car along with some additional features.
+Build an in-vehicle digital infotainment system that provide car telematics, diagnosis, full blown android-based media center for car along with some additional features.
 
 *Full list of features and capabilities are listed in a separate section below.*
 
