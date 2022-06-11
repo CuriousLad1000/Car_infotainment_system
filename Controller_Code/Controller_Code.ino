@@ -46,6 +46,23 @@ uint32_t violetF = stripF.Color(191, 0, 255);
 uint32_t whiteF = stripF.Color(255, 255, 255);
 uint32_t yellowF = stripF.Color(255, 255, 0);
 
+// Back====
+uint32_t blueR = stripR.Color(0, 0, 255);
+uint32_t cyanR = stripR.Color(0, 255, 255);
+uint32_t darkBlueR = stripR.Color(0, 128, 255);
+uint32_t greenR = stripR.Color(0, 255, 0);
+uint32_t lightBlueR = stripR.Color(0, 191, 255);
+uint32_t lightGreenR = stripR.Color(64, 255, 0);
+uint32_t magentaR = stripR.Color(255, 0, 255);
+uint32_t maroonR = stripR.Color(255, 0, 64);
+uint32_t orangeR = stripR.Color(255, 128, 0);
+uint32_t parrotGreenR = stripR.Color(191, 255, 0);
+uint32_t pinkR = stripR.Color(255, 0, 191);
+uint32_t purpleR = stripR.Color(128, 0, 255);
+uint32_t redR = stripR.Color(255, 0, 0);
+uint32_t violetR = stripR.Color(191, 0, 255);
+uint32_t whiteR = stripR.Color(255, 255, 255);
+uint32_t yellowR = stripR.Color(255, 255, 0);
 //======================== Temperature Sensors=========================================
 
 //===================== DS18b20(SyStem Temp) ========================
@@ -85,10 +102,14 @@ int Ignition_sw;
 //== led==
 int LED_en;
 int modeF;
+int modeR;
 int delF;
+int delR;
 int CF;
+int CR;
 int BRF;
-
+int BRR;
+int loc;
 
 void setup()
 {
@@ -145,7 +166,11 @@ void loop()
   delF = myNextion.getComponentValue("LED.delF");
   CF = myNextion.getComponentValue("LED.CF");
   BRF = myNextion.getComponentValue("LED.BRF");
-  
+  modeR = myNextion.getComponentValue("LED.modeR");   //
+  delR = myNextion.getComponentValue("LED.delR");
+  CR = myNextion.getComponentValue("LED.CR");
+  BRR = myNextion.getComponentValue("LED.BRR");
+
   /*Serial.println(FogHalo_sw);
     Serial.println(FogHead_sw);
     Serial.println(AUX_sw);
@@ -328,7 +353,7 @@ void loop()
     //    Serial.println("Tcon OFF");
   }
   //==============================================================================================LED  CODE========================
-    if (LED_en == 1)
+  if (LED_en == 1)
   {
     switch (modeF)
     {
@@ -341,10 +366,28 @@ void loop()
       case 3: RainbowCycle();
         break;
     }
+    switch (modeR)
+    {
+      case 0: SingleR();
+        break;
+      case 1: MovingR();
+        break;
+      case 2: RainbowR();
+        break;
+      case 3: RainbowCycleR();
+        break;
+    }
+  }
+  else
+  {
+    stripF.setBrightness(0);
+    stripF.show();
+    stripR.setBrightness(0);
+    stripR.show();
   }
 
   //=====================================================================================================================================
-//  Serial.println("End of loop");
+  //  Serial.println("End of loop");
 }
 
 int UsensR()
@@ -484,7 +527,7 @@ void Single()
 {
   int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
-  stripR.setBrightness(BRF2);
+  //stripR.setBrightness(BRF2);
   uint32_t col;
   switch (CF) {
     case 1: col = blueF;
@@ -524,10 +567,58 @@ void Single()
   for (uint16_t i = 0; i < PIXEL_COUNT; i++)
   {
     stripF.setPixelColor(i, col);
-    stripR.setPixelColor(i, col);
+    //   stripR.setPixelColor(i, col);
     stripF.show();
-    stripR.show();
+    //   stripR.show();
     delay(delF);
+  }
+}
+void SingleR()
+{
+  int BRR2 = BRR * 2.55;
+  //stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRR2);
+  uint32_t col;
+  switch (CR) {
+    case 1: col = blueR;
+      break;
+    case 2: col = cyanR;
+      break;
+    case 3: col = darkBlueR;
+      break;
+    case 4: col = greenR;
+      break;
+    case 5: col = lightBlueR;
+      break;
+    case 6: col = lightGreenR;
+      break;
+    case 7: col = magentaR;
+      break;
+    case 8: col = maroonR;
+      break;
+    case 9: col = orangeR;
+      break;
+    case 10: col = parrotGreenR;
+      break;
+    case 11: col = pinkR;
+      break;
+    case 12: col = purpleR;
+      break;
+    case 13: col = redR;
+      break;
+    case 14: col = violetR;
+      break;
+    case 15: col = whiteR;
+      break;
+    case 16: col = yellowR;
+      break;
+  }
+
+  for (uint16_t i = 0; i < PIXEL_COUNT; i++)
+  {
+    stripR.setPixelColor(i, col);
+    stripR.show();
+    delay(delR);
   }
 }
 //======================= Moving ==================================
@@ -536,7 +627,7 @@ void Moving()
 {
   int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
-  stripR.setBrightness(BRF2);
+  //  stripR.setBrightness(BRF2);
   uint32_t col;
   switch (CF) {
     case 1: col = blueF;
@@ -576,21 +667,76 @@ void Moving()
   for (int i = 0; i < PIXEL_COUNT; i++)
   {
     stripF.setPixelColor(i, col);
-    stripR.setPixelColor(i, col);
+    //    stripR.setPixelColor(i, col);
     stripF.setPixelColor(i + 1, col); // turn the "i+1"th pixel on
-    stripR.setPixelColor(i + 1, col); // turn the "i"th pixel on
+    //    stripR.setPixelColor(i + 1, col); // turn the "i"th pixel on
     stripF.setPixelColor(i + 2, col); // turn the "i+1"th pixel onm
-    stripR.setPixelColor(i + 2, col); // turn the "i+1"th pixel on
+    //    stripR.setPixelColor(i + 2, col); // turn the "i+1"th pixel on
     stripF.show();
-    stripR.show();
+    //    stripR.show();
     delay(delF); // wait 1/10th of a second
     stripF.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
-    stripR.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
+    //    stripR.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
     stripF.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
-    stripR.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
+    //    stripR.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
     stripF.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
-    stripR.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
+    //    stripR.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
     stripF.show();
+    //    stripR.show();
+  }
+}
+void MovingR()
+{
+  int BRR2 = BRR * 2.55;
+  // stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRR2);
+  uint32_t col;
+  switch (CR) {
+    case 1: col = blueR;
+      break;
+    case 2: col = cyanR;
+      break;
+    case 3: col = darkBlueR;
+      break;
+    case 4: col = greenR;
+      break;
+    case 5: col = lightBlueR;
+      break;
+    case 6: col = lightGreenR;
+      break;
+    case 7: col = magentaR;
+      break;
+    case 8: col = maroonR;
+      break;
+    case 9: col = orangeR;
+      break;
+    case 10: col = parrotGreenR;
+      break;
+    case 11: col = pinkR;
+      break;
+    case 12: col = purpleR;
+      break;
+    case 13: col = redR;
+      break;
+    case 14: col = violetR;
+      break;
+    case 15: col = whiteR;
+      break;
+    case 16: col = yellowR;
+      break;
+  }
+
+  for (int i = 0; i < PIXEL_COUNT; i++)
+  {
+    stripR.setPixelColor(i, col);
+
+    stripR.setPixelColor(i + 1, col); // turn the "i"th pixel on
+    stripR.setPixelColor(i + 2, col); // turn the "i+1"th pixel on
+    stripR.show();
+    delay(delR); // wait 1/10th of a second
+    stripR.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
+    stripR.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
+    stripR.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
     stripR.show();
   }
 }
@@ -600,7 +746,7 @@ void Rainbow()
 {
   int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
-  stripR.setBrightness(BRF2);
+  //  stripR.setBrightness(BRF2);
   uint16_t i, j;
 
   for (j = 0; j < 256; j++)
@@ -608,20 +754,39 @@ void Rainbow()
     for (i = 0; i < PIXEL_COUNT; i++)
     {
       stripF.setPixelColor(i, Wheel((i + j) & 255));
-      stripR.setPixelColor(i, Wheel((i + j) & 255));
+      //      stripR.setPixelColor(i, Wheel((i + j) & 255));
     }
     stripF.show();
-    stripR.show();
+    //    stripR.show();
     delay(delF);
   }
 }
 
+void RainbowR()
+{
+  int BRR2 = BRR * 2.55;
+  // stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRR2);
+  uint16_t i, j;
+
+  for (j = 0; j < 256; j++)
+  {
+    for (i = 0; i < PIXEL_COUNT; i++)
+    {
+      //    stripF.setPixelColor(i, Wheel((i + j) & 255));
+      stripR.setPixelColor(i, WheelR((i + j) & 255));
+    }
+    //   stripF.show();
+    stripR.show();
+    delay(delR);
+  }
+}
 //===================Rainbow Cycle================================
 void RainbowCycle()
 {
   int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
-  stripR.setBrightness(BRF2);
+  // stripR.setBrightness(BRF2);
   uint16_t i, j;
 
   //for (j = 0; j < 256 * 5; j++)// 5 cycles of all colors on wheel
@@ -630,10 +795,10 @@ void RainbowCycle()
     for (i = 0; i < PIXEL_COUNT; i++)
     {
       stripF.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
-      stripR.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
+      //     stripR.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
     }
     stripF.show();
-    stripR.show();
+    //    stripR.show();
     delay(delF);
   }
 }
@@ -652,4 +817,40 @@ uint32_t Wheel(byte WheelPos)
   }
   WheelPos -= 170;
   return stripF.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+void RainbowCycleR()
+{
+  int BRR2 = BRR * 2.55;
+  //  stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRR2);
+  uint16_t i, j;
+
+  //for (j = 0; j < 256 * 5; j++)// 5 cycles of all colors on wheel
+  for (j = 256; j > 0; j--)
+  {
+    for (i = 0; i < PIXEL_COUNT; i++)
+    {
+      //     stripF.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
+      stripR.setPixelColor(i, WheelR(((i * 256 / PIXEL_COUNT) + j) & 255));
+    }
+    stripR.show();
+    delay(delR);
+  }
+}
+
+uint32_t WheelR(byte WheelPos)
+{
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85)
+  {
+    return stripR.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170)
+  {
+    WheelPos -= 85;
+    return stripR.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return stripR.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
