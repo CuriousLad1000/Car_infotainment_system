@@ -1,6 +1,5 @@
 #include <SoftwareSerial.h>
 #include <Nextion.h>
-#include <NewPing.h>
 #include "DHT.h"
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 #include <OneWire.h>
@@ -18,19 +17,19 @@ int RelBoard2_Ch4_FogMain = 7;
 //===================== PING ============================
 const int PING_L_trigPin = 9;
 const int PING_L_echoPin = 8;
-
 const int PING_R_trigPin = 11;
 const int PING_R_echoPin = 10;
+#define max_distance 250
 //======================= RESET ===================================
 int RST = 12;
 //======================== Temperature Sensors=========================================
 
 //===================== DS18b20(SyStem Temp) ========================
-int TS_ds_sys = A0;
+int TS_ds_sys = A1;
 OneWire oneWire1(TS_ds_sys);
 DallasTemperature sensors1(&oneWire1);
 //================== DS18b20(Car Back Temp) ========================
-int TS_ds_CarBK = A1;
+int TS_ds_CarBK = A0;
 OneWire oneWire2(TS_ds_CarBK);
 DallasTemperature sensors2(&oneWire2);
 
@@ -43,8 +42,10 @@ int LCD_RX = A4;
 SoftwareSerial nextion(LCD_TX, LCD_RX);
 //========================== Buzzer ==================================================
 int buzz = A5;
-//========================================================================================================
+int buzzen;
 
+//========================================================================================================
+int fas;
 
 Nextion myNextion(nextion, 9600); //create a Nextion object named myNextion using the nextion serial port @ 9600bps
 
@@ -59,10 +60,10 @@ int rest_sw;
 int Ignition_sw;
 
 
-
 void setup()
 {
-  Serial.begin(9600);
+  digitalWrite(RST, HIGH);
+//  Serial.begin(9600);
   myNextion.init();
   dht.begin();
   sensors1.begin();  // for ds18b20
@@ -83,11 +84,10 @@ void setup()
 
   digitalWrite(RelBoard2_Ch1_FAN, HIGH);
   digitalWrite(RelBoard1_Ch1_Ch2_AUX, HIGH);
-  digitalWrite(RelBoard1_Ch3_Ch4_USBPowerCUT, HIGH);
+  digitalWrite(RelBoard1_Ch3_Ch4_USBPowerCUT, LOW);  //Enable system
   digitalWrite(RelBoard2_Ch2_IGN, HIGH);
   digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
   digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
-
 
 }
 
@@ -100,103 +100,244 @@ void loop()
   Ping_sw = myNextion.getComponentValue("Reverse.enping");
   Temp_ctrl_sw = myNextion.getComponentValue("Settings.Temp_ctrl");
   Temp_lt_val = myNextion.getComponentValue("Settings.tmp_lt");                       //============= Fan Cut off Temperature
-  // reset_sw = myNextion.getComponentValue("Settings.tmp_lt");
-  // Ignition_sw = myNextion.getComponentValue("Settings.tmp_lt");
-
-  //=========================================================================================== IGNITION =============
-  String RST_message = myNextion.listen(); //check for message
-  if (RST_message == "65 4 5 0 ffff ffff ffff")     // Touch Release event for reset Arduino
+  Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
+  rest_sw = myNextion.getComponentValue("Settings.reset");
+  //=========================================================================================== Reset =============
+  if (rest_sw == 1)     // Touch Press event for reset Arduino
   {
-    // Reset Arduino
-    Serial.println("Reset ON");
-
+    //   Serial.println("Reset ON");
+    digitalWrite(RST, LOW);  // Reset Arduino
+    while (rest_sw == 1)
+    {
+      rest_sw = myNextion.getComponentValue("Settings.reset");
+    }
+  }
+  else if (rest_sw == 0)     // Touch Press event for reset Arduino
+  {
+    //    Serial.println("Reset OFF");
+    digitalWrite(RST, HIGH);  // Reset Arduino
+    while (rest_sw == 0)
+    {
+      rest_sw = myNextion.getComponentValue("Settings.reset");
+    }
   }
 
-
   //=========================================================================================== IGNITION =============
-  String ign_message = myNextion.listen(); //check for message
-  if (ign_message == "65 8 3 1 ffff ffff ffff")     // Touch Press event for reset Arduino
+  if (Ignition_sw == 1)     // Touch Press event for reset Arduino
   {
     // Turn Relay ON
-    Serial.println("Ignition ON");
-
+    //    Serial.println("Ignition ON");
+    while (Ignition_sw == 1)
+    {
+      Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
+      digitalWrite(RelBoard2_Ch2_IGN, LOW);
+    }
   }
-  if (ign_message == "65 8 3 0 ffff ffff ffff")     // Touch Release event for reset Arduino
+  else if (Ignition_sw == 0)     // Touch Release event for reset Arduino
   {
     // Turn Relay OFF
-    Serial.println("Ignition OFF");
-
+    //   Serial.println("Ignition OFF");
+    digitalWrite(RelBoard2_Ch2_IGN, HIGH);
+    while (Ignition_sw == 0)
+    {
+      Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
+      digitalWrite(RelBoard2_Ch2_IGN, HIGH);
+    }
   }
-
   //=========================================================================================== FOG LAMPS =============
 
   if (FogHalo_sw == 1)
   {
     // Turn Halo Relay ON
+    //   Serial.println("Halo ON");
+    digitalWrite(RelBoard2_Ch3_FogHALO, LOW);
   }
   else
   {
     // Turn Halo Relay OFF
+    //    Serial.println("Halo OFF");
+    digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
   }
 
   if (FogHead_sw == 1)
   {
     // Turn Foghead Relay ON
+    //   Serial.println("Head ON");
+    digitalWrite(RelBoard2_Ch4_FogMain, LOW);
   }
   else
   {
     // Turn Foghead Relay OFF
+    //    Serial.println("Head OFF");
+    digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
   }
   //============================================================================================ AUX ==========================
   if (AUX_sw == 1)
   {
     // Turn AUX Relay ON
+    //    Serial.println("AUX ON");
+    digitalWrite(RelBoard1_Ch1_Ch2_AUX, LOW);
   }
   else
   {
     // Turn AUX Relay OFF
+    //    Serial.println("AUX OFF");
+    digitalWrite(RelBoard1_Ch1_Ch2_AUX, HIGH);
   }
   //============================================================================================= Manual Fan Override =========================
   if (Fan_sw == 1)
   {
     // Turn Fan Relay ON
+    //    Serial.println("FAN ON");
+    digitalWrite(RelBoard2_Ch1_FAN, LOW);
   }
   else
   {
-    // Turn Fan Relay OFF
+    if (Temp_ctrl_sw == 1)
+    {
+      //do nothing
+    }
+    else
+    {
+      digitalWrite(RelBoard2_Ch1_FAN, HIGH);
+    }
+
   }
   //============================================================================================== Activate Ping Code ========================
   if (Ping_sw == 1)
   {
-    // TX Ping data
+    buzzen = myNextion.getComponentValue("Reverse.enbuzz");
+    int distanceR =  UsensR();
+    int distanceL =  UsensL();
+    //int distanceL = 300;
+    if (buzzen == 1)
+    {
+      if ((distanceR <= 200.00 && distanceR > 150.00) || (distanceL <= 200.00 && distanceL > 150.00))
+      {
+        tone(buzz, 400);
+        delay(50);
+        noTone(buzz);
+      }
+      else if ((distanceR <= 150 && distanceR > 100) || (distanceL <= 150 && distanceL > 100))
+      {
+        tone(buzz, 200);
+        delay(100);
+        noTone(buzz);
+      }
+      else if ((distanceR <= 100 && distanceR > 20) || (distanceL <= 100 && distanceL > 20))
+      {
+        tone(buzz, 300);
+        delay(300);
+        noTone(buzz);
+      }
+      else if ((distanceR <= 20 && distanceR > 0) || (distanceL <= 20 && distanceL > 0))
+      {
+        tone(buzz, 400);
+        delay(500);
+        noTone(buzz);
+      }
+    }
   }
-  else
-  {
-    // NO TX Ping data
-  }
+
   //=============================================================================================== Enable Temperature Controller =======================
   if (Temp_ctrl_sw == 1)
   {
     //  Enter codes for temperature controller here to turn on or off fan automatically
+
+
+    fas =  TempSys_TX();
+    //    Serial.println("Tcon ON");
+    if (fas == 1)
+    {
+      digitalWrite(RelBoard2_Ch1_FAN, LOW); //  FAN ON
+      //      Serial.println("fan ON");
+    }
+    else
+    {
+      digitalWrite(RelBoard2_Ch1_FAN, HIGH); //  FAN OFF
+      //      Serial.println("fan Off");
+    }
+
   }
   else
   {
-    // disable Temp Controller (Set temp lt to 200
+    fas =  TempSys_TX();
+    //    Serial.println("Tcon OFF");
   }
   //======================================================================================================================
 
-
 }
 
-void TempSys_TX()
+int UsensR()
 {
-  int x = 129;
-  int y1 = 48;
-  int y2 = 105;
-  int y3 = 165;
-  int width = 211;
-  int height = 30;
+  long durationR, distanceR;
+  digitalWrite(PING_R_trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PING_R_trigPin, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(PING_R_trigPin, LOW);
+  durationR = pulseIn(PING_R_echoPin, HIGH);
+  distanceR = (durationR / 2) / 29.1;
+  if (distanceR < max_distance)
+  {
+    //    Serial.print(distanceR);
+    //    Serial.println(" cm");
 
+    String b =  (String(distanceR) + " CM");
+    String c =  ("Ping Right:" + String(distanceR) + " CM");
+    myNextion.setComponentText("Reverse.pngR", b);
+    myNextion.setComponentText("PowerSaver.pwpngR", c);
+
+  }
+  else
+  {
+    String b =  ("Range Out");
+    myNextion.setComponentText("Reverse.pngR", b);
+    myNextion.setComponentText("PowerSaver.pwpngR", "Ping Right: RO");
+    //    Serial.println("Range Out");
+  }
+
+  return distanceR;
+}
+
+
+int UsensL()
+{
+  long durationL, distanceL;
+  digitalWrite(PING_L_trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PING_L_trigPin, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(PING_L_trigPin, LOW);
+  durationL = pulseIn(PING_L_echoPin, HIGH);
+  distanceL = (durationL / 2) / 29.1;
+
+  if (distanceL < max_distance)
+  {
+    //    Serial.print(distanceL);
+    //    Serial.println(" cm");
+
+    String a =  (String(distanceL) + " CM");
+    String d =  ("Ping Left:" + String(distanceL) + " CM");
+    myNextion.setComponentText("Reverse.pngL", a);
+    myNextion.setComponentText("PowerSaver.pwpngL", d);
+
+  }
+  else
+  {
+    String a =  ("Range Out");
+    myNextion.setComponentText("Reverse.pngL", a);
+    myNextion.setComponentText("PowerSaver.pwpngL", "Ping Right: RO");
+    //    Serial.println("Range Out");
+
+  }
+  return distanceL;
+}
+
+
+int TempSys_TX()
+{
+  int fs = 0;
   //===========Temp_Sens_DS18B20  (System Temperature) ===================================
   sensors1.requestTemperatures(); // Send the command to get temperatures
   float Res1 = sensors1.getTempCByIndex(0);
@@ -205,8 +346,9 @@ void TempSys_TX()
   //  Serial.println(a);
   myNextion.setComponentText("Temperature.tmp0", a);
   int scaled_value1 = map(Res1a, 0, 100, 0, 100); // always map value from 0 to 100
-  myNextion.updateProgressBar(x, y1, width, height, scaled_value1, 7, 8); // update the progress bar
+  myNextion.setComponentValue("Temperature.prg0", scaled_value1);
   myNextion.setComponentText("PowerSaver.pwsys", a);
+//  Serial.println(a);
 
 
   //===========Temp_Sens_DS18B20  (Car Back Temperature) ===================================
@@ -217,17 +359,19 @@ void TempSys_TX()
   //  Serial.println(b);
   myNextion.setComponentText("Temperature.tmp2", b);
   int scaled_value2 = map(Res2a, 0, 100, 0, 100); // always map value from 0 to 100
-  myNextion.updateProgressBar(x, y2, width, height, scaled_value2, 7, 8); // update the progress bar
-  myNextion.setComponentText("PowerSaver.pwdash", b);
+  myNextion.setComponentValue("Temperature.prg2", scaled_value2);
+  myNextion.setComponentText("PowerSaver.pwbk", b);
+//  Serial.println(b);
 
 
   //===========Temp_Sens_DHT22  (Dash Humidity and Temperature) ===================================
-
+ret:
   float t = dht.readTemperature();
   float h = dht.readHumidity();
   if (isnan(h) || isnan(t))
   {
-    return;
+    //  return;
+    goto ret;
   }
   String c =  (String(t) + " \xb0" + "C");  //xb0 is for degree symbol
 
@@ -235,19 +379,21 @@ void TempSys_TX()
 
   myNextion.setComponentText("Temperature.tmp1a", c);
   int scaled_value3 = map(t, 0, 100, 0, 100); // always map value from 0 to 100
-  myNextion.updateProgressBar(x, y3, width, height, scaled_value3, 7, 8); // update the progress bar
-  myNextion.setComponentText("PowerSaver.pwbk", c);
+  myNextion.setComponentValue("Temperature.prg1", scaled_value3);
+  myNextion.setComponentText("PowerSaver.pwdash", c);
   myNextion.setComponentText("Temperature.tmp1b", d);
-
-  //Serial.println(c);
-  //Serial.println(d);
+//  Serial.println(c);
+//  Serial.println(d);
 
   if (t > Temp_lt_val)
   {
-    digitalWrite(RelBoard2_Ch1_FAN, LOW); //  FAN ON
+    // digitalWrite(RelBoard2_Ch1_FAN, LOW); //  FAN ON
+    fs = 1;
   }
   else
   {
-    digitalWrite(RelBoard2_Ch1_FAN, HIGH); // FAN OFF
+    //   digitalWrite(RelBoard2_Ch1_FAN, HIGH); // FAN OFF
+    fs = 0;
   }
+  return fs;
 }
