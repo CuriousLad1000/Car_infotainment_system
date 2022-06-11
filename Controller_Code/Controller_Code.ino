@@ -4,12 +4,11 @@
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include <Adafruit_NeoPixel.h>
 //===============================  PIN MAPPING ======================================================
 
 //================= RELAYS ========================
 int RelBoard1_Ch1_Ch2_AUX = 2;
-int RelBoard1_Ch3_Ch4_USBPowerCUT = 3;
 int RelBoard2_Ch1_FAN = 4;
 int RelBoard2_Ch2_IGN = 5;
 int RelBoard2_Ch3_FogHALO = 6;
@@ -22,6 +21,48 @@ const int PING_R_echoPin = 10;
 #define max_distance 250
 //======================= RESET ===================================
 int RST = 12;
+//========================= INTERIOR LIGHTS ==============================
+#define BACK_LED    3    // Digital IO pin connected to the NeoPixels.
+#define FRONT_LED    13    // Digital IO pin connected to the NeoPixels.
+#define PIXEL_COUNT 32
+Adafruit_NeoPixel stripR = Adafruit_NeoPixel(PIXEL_COUNT, BACK_LED, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel stripF = Adafruit_NeoPixel(PIXEL_COUNT, FRONT_LED, NEO_GRB + NEO_KHZ800);
+//=================FOR Single/Moving mode=========================
+// Front===
+uint32_t blueF = stripF.Color(0, 0, 255);
+uint32_t cyanF = stripF.Color(0, 255, 255);
+uint32_t darkBlueF = stripF.Color(0, 128, 255);
+uint32_t greenF = stripF.Color(0, 255, 0);
+uint32_t lightBlueF = stripF.Color(0, 191, 255);
+uint32_t lightGreenF = stripF.Color(64, 255, 0);
+uint32_t magentaF = stripF.Color(255, 0, 255);
+uint32_t maroonF = stripF.Color(255, 0, 64);
+uint32_t orangeF = stripF.Color(255, 128, 0);
+uint32_t parrotGreenF = stripF.Color(191, 255, 0);
+uint32_t pinkF = stripF.Color(255, 0, 191);
+uint32_t purpleF = stripF.Color(128, 0, 255);
+uint32_t redF = stripF.Color(255, 0, 0);
+uint32_t violetF = stripF.Color(191, 0, 255);
+uint32_t whiteF = stripF.Color(255, 255, 255);
+uint32_t yellowF = stripF.Color(255, 255, 0);
+// Back====
+uint32_t blueR = stripR.Color(0, 0, 255);
+uint32_t cyanR = stripR.Color(0, 255, 255);
+uint32_t darkBlueR = stripR.Color(0, 128, 255);
+uint32_t greenR = stripR.Color(0, 255, 0);
+uint32_t lightBlueR = stripR.Color(0, 191, 255);
+uint32_t lightGreenR = stripR.Color(64, 255, 0);
+uint32_t magentaR = stripR.Color(255, 0, 255);
+uint32_t maroonR = stripR.Color(255, 0, 64);
+uint32_t orangeR = stripR.Color(255, 128, 0);
+uint32_t parrotGreenR = stripR.Color(191, 255, 0);
+uint32_t pinkR = stripR.Color(255, 0, 191);
+uint32_t purpleR = stripR.Color(128, 0, 255);
+uint32_t redR = stripR.Color(255, 0, 0);
+uint32_t violetR = stripR.Color(191, 0, 255);
+uint32_t whiteR = stripR.Color(255, 255, 255);
+uint32_t yellowR = stripR.Color(255, 255, 0);
+
 //======================== Temperature Sensors=========================================
 
 //===================== DS18b20(SyStem Temp) ========================
@@ -58,19 +99,35 @@ int Temp_ctrl_sw;
 int Temp_lt_val;
 int rest_sw;
 int Ignition_sw;
+//== led==
+int LED_en;
+int modeF;
+int modeR;
+int delF;
+int delR;
+int CF;
+int CR;
+int BRF;
+int BRR;
+int loc;
 
 
 void setup()
 {
   digitalWrite(RST, HIGH);
-//  Serial.begin(9600);
+  //  Serial.begin(9600);
   myNextion.init();
   dht.begin();
   sensors1.begin();  // for ds18b20
   sensors2.begin();  // for ds18b20
+  stripF.begin();
+  stripF.show(); // Initialize all pixels to 'off'
+  stripR.begin();
+  stripR.show(); // Initialize all pixels to 'off'
+
+
 
   pinMode(RelBoard1_Ch1_Ch2_AUX, OUTPUT);
-  pinMode(RelBoard1_Ch3_Ch4_USBPowerCUT, OUTPUT);
   pinMode(RelBoard2_Ch1_FAN, OUTPUT);
   pinMode(RelBoard2_Ch2_IGN, OUTPUT);
   pinMode(RelBoard2_Ch3_FogHALO, OUTPUT);
@@ -81,13 +138,15 @@ void setup()
   pinMode(PING_R_echoPin, INPUT);
   pinMode(RST, OUTPUT);
   pinMode(buzz, OUTPUT);
+  //  pinMode(Back_LED, OUTPUT);
+  // pinMode(Front_LED, OUTPUT);
 
-  digitalWrite(RelBoard2_Ch1_FAN, HIGH);
-  digitalWrite(RelBoard1_Ch1_Ch2_AUX, HIGH);
-  digitalWrite(RelBoard1_Ch3_Ch4_USBPowerCUT, LOW);  //Enable system
-  digitalWrite(RelBoard2_Ch2_IGN, HIGH);
-  digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
-  digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
+  //digitalWrite(RelBoard2_Ch1_FAN, HIGH);
+  //digitalWrite(RelBoard1_Ch1_Ch2_AUX, HIGH);
+  //digitalWrite(RelBoard1_Ch3_Ch4_USBPowerCUT, LOW);  //Enable system
+  //digitalWrite(RelBoard2_Ch2_IGN, HIGH);
+  //digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
+  //digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
 
 }
 
@@ -102,6 +161,37 @@ void loop()
   Temp_lt_val = myNextion.getComponentValue("Settings.tmp_lt");                       //============= Fan Cut off Temperature
   Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
   rest_sw = myNextion.getComponentValue("Settings.reset");
+
+  LED_en = myNextion.getComponentValue("LED.LEDen");  //enable led info
+  modeF = myNextion.getComponentValue("LED.modeF");   //
+  modeR = myNextion.getComponentValue("LED.modeR");
+  delF = myNextion.getComponentValue("LED.delF");
+  delR = myNextion.getComponentValue("LED.delR");
+  CF = myNextion.getComponentValue("LED.CF");
+  CR = myNextion.getComponentValue("LED.CR");
+  BRF = myNextion.getComponentValue("LED.BRF");
+  BRR = myNextion.getComponentValue("LED.BRR");
+  loc = myNextion.getComponentValue("LED.loc");
+
+  /*Serial.println(FogHalo_sw);
+    Serial.println(FogHead_sw);
+    Serial.println(AUX_sw);
+    Serial.println(Ping_sw);
+    Serial.println(Temp_ctrl_sw);
+    Serial.println(Temp_lt_val);
+    Serial.println(Ignition_sw);
+    Serial.println(rest_sw);
+
+    Serial.println(LED_en);
+    Serial.println(modeF);
+    Serial.println(modeR);
+    Serial.println(delF);
+    Serial.println(delR);
+    Serial.println(CF);
+    Serial.println(CR);
+    Serial.println(BRF);
+    Serial.println(BRR);
+    Serial.println(loc);*/
   //=========================================================================================== Reset =============
   if (rest_sw == 1)     // Touch Press event for reset Arduino
   {
@@ -130,18 +220,18 @@ void loop()
     while (Ignition_sw == 1)
     {
       Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
-      digitalWrite(RelBoard2_Ch2_IGN, LOW);
+      digitalWrite(RelBoard2_Ch2_IGN, HIGH);
     }
   }
   else if (Ignition_sw == 0)     // Touch Release event for reset Arduino
   {
     // Turn Relay OFF
     //   Serial.println("Ignition OFF");
-    digitalWrite(RelBoard2_Ch2_IGN, HIGH);
+    digitalWrite(RelBoard2_Ch2_IGN, LOW);
     while (Ignition_sw == 0)
     {
       Ignition_sw = myNextion.getComponentValue("Ignition.enstart");
-      digitalWrite(RelBoard2_Ch2_IGN, HIGH);
+      digitalWrite(RelBoard2_Ch2_IGN, LOW);
     }
   }
   //=========================================================================================== FOG LAMPS =============
@@ -149,27 +239,27 @@ void loop()
   if (FogHalo_sw == 1)
   {
     // Turn Halo Relay ON
-    //   Serial.println("Halo ON");
-    digitalWrite(RelBoard2_Ch3_FogHALO, LOW);
+    //  Serial.println("Halo ON");
+    digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
   }
   else
   {
     // Turn Halo Relay OFF
-    //    Serial.println("Halo OFF");
-    digitalWrite(RelBoard2_Ch3_FogHALO, HIGH);
+    // Serial.println("Halo OFF");
+    digitalWrite(RelBoard2_Ch3_FogHALO, LOW);
   }
 
   if (FogHead_sw == 1)
   {
     // Turn Foghead Relay ON
-    //   Serial.println("Head ON");
-    digitalWrite(RelBoard2_Ch4_FogMain, LOW);
+    // Serial.println("Head ON");
+    digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
   }
   else
   {
     // Turn Foghead Relay OFF
-    //    Serial.println("Head OFF");
-    digitalWrite(RelBoard2_Ch4_FogMain, HIGH);
+    // Serial.println("Head OFF");
+    digitalWrite(RelBoard2_Ch4_FogMain, LOW);
   }
   //============================================================================================ AUX ==========================
   if (AUX_sw == 1)
@@ -189,7 +279,7 @@ void loop()
   {
     // Turn Fan Relay ON
     //    Serial.println("FAN ON");
-    digitalWrite(RelBoard2_Ch1_FAN, LOW);
+    digitalWrite(RelBoard2_Ch1_FAN, HIGH);
   }
   else
   {
@@ -199,7 +289,7 @@ void loop()
     }
     else
     {
-      digitalWrite(RelBoard2_Ch1_FAN, HIGH);
+      digitalWrite(RelBoard2_Ch1_FAN, LOW);
     }
 
   }
@@ -249,12 +339,12 @@ void loop()
     //    Serial.println("Tcon ON");
     if (fas == 1)
     {
-      digitalWrite(RelBoard2_Ch1_FAN, LOW); //  FAN ON
+      digitalWrite(RelBoard2_Ch1_FAN, HIGH); //  FAN ON
       //      Serial.println("fan ON");
     }
     else
     {
-      digitalWrite(RelBoard2_Ch1_FAN, HIGH); //  FAN OFF
+      digitalWrite(RelBoard2_Ch1_FAN, LOW); //  FAN OFF
       //      Serial.println("fan Off");
     }
 
@@ -264,9 +354,12 @@ void loop()
     fas =  TempSys_TX();
     //    Serial.println("Tcon OFF");
   }
-  //======================================================================================================================
-
+  //==============================================================================================LED  CODE========================
+  LED();
+  //=====================================================================================================================================
+  Serial.println("End of loop");
 }
+
 
 int UsensR()
 {
@@ -348,7 +441,7 @@ int TempSys_TX()
   int scaled_value1 = map(Res1a, 0, 100, 0, 100); // always map value from 0 to 100
   myNextion.setComponentValue("Temperature.prg0", scaled_value1);
   myNextion.setComponentText("PowerSaver.pwsys", a);
-//  Serial.println(a);
+  //  Serial.println(a);
 
 
   //===========Temp_Sens_DS18B20  (Car Back Temperature) ===================================
@@ -361,7 +454,7 @@ int TempSys_TX()
   int scaled_value2 = map(Res2a, 0, 100, 0, 100); // always map value from 0 to 100
   myNextion.setComponentValue("Temperature.prg2", scaled_value2);
   myNextion.setComponentText("PowerSaver.pwbk", b);
-//  Serial.println(b);
+  //  Serial.println(b);
 
 
   //===========Temp_Sens_DHT22  (Dash Humidity and Temperature) ===================================
@@ -382,8 +475,8 @@ ret:
   myNextion.setComponentValue("Temperature.prg1", scaled_value3);
   myNextion.setComponentText("PowerSaver.pwdash", c);
   myNextion.setComponentText("Temperature.tmp1b", d);
-//  Serial.println(c);
-//  Serial.println(d);
+  //  Serial.println(c);
+  //  Serial.println(d);
 
   if (t > Temp_lt_val)
   {
@@ -397,3 +490,391 @@ ret:
   }
   return fs;
 }
+
+//===================================================================================================================LED        LED==========================================================
+
+//=========================================================== LED =================================================================
+void LED()
+{
+  if (LED_en == 1)
+  {
+    FW();
+    BK();
+  }
+}
+
+void FW()
+{
+  switch (modeF) {
+    case 0: SingleF();
+      break;
+    case 1: MovingF();
+      break;
+    case 2: RainbowF(delF);
+      break;
+    case 3: RainbowCycleF(delF);
+      break;
+  }
+}
+
+void BK()
+{
+  switch (modeR) {
+    case 0: SingleR();
+      break;
+    case 1: MovingR();
+      break;
+    case 2: RainbowR(delR);
+      break;
+    case 3: RainbowCycleR(delR);
+      break;
+  }
+}
+
+void SingleF()
+{
+  int BRF2 = BRF * 2.55;
+  stripF.setBrightness(BRF2);
+
+  uint32_t col;
+  switch (CF) {
+    case 1: col = blueF;
+      break;
+    case 2: col = cyanF;
+      break;
+    case 3: col = darkBlueF;
+      break;
+    case 4: col = greenF;
+      break;
+    case 5: col = lightBlueF;
+      break;
+    case 6: col = lightGreenF;
+      break;
+    case 7: col = magentaF;
+      break;
+    case 8: col = maroonF;
+      break;
+    case 9: col = orangeF;
+      break;
+    case 10: col = parrotGreenF;
+      break;
+    case 11: col = pinkF;
+      break;
+    case 12: col = purpleF;
+      break;
+    case 13: col = redF;
+      break;
+    case 14: col = violetF;
+      break;
+    case 15: col = whiteF;
+      break;
+    case 16: col = yellowF;
+      break;
+  }
+
+  colorWipeF(col, delF);
+}
+//======================= For Single Mode==================================
+void colorWipeF(uint32_t c, uint8_t wait)
+{
+
+  for (uint16_t i = 0; i < stripF.numPixels(); i++)
+  {
+    stripF.setPixelColor(i, c);
+    stripF.show();
+    delay(wait);
+  }
+}
+
+void SingleR()
+{
+  int BRR2 = BRR * 2.55;
+  stripR.setBrightness(BRR2);
+
+  uint32_t col;
+  switch (CR) {
+    case 1: col = blueR;
+      break;
+    case 2: col = cyanR;
+      break;
+    case 3: col = darkBlueR;
+      break;
+    case 4: col = greenR;
+      break;
+    case 5: col = lightBlueR;
+      break;
+    case 6: col = lightGreenR;
+      break;
+    case 7: col = magentaR;
+      break;
+    case 8: col = maroonR;
+      break;
+    case 9: col = orangeR;
+      break;
+    case 10: col = parrotGreenR;
+      break;
+    case 11: col = pinkR;
+      break;
+    case 12: col = purpleR;
+      break;
+    case 13: col = redR;
+      break;
+    case 14: col = violetR;
+      break;
+    case 15: col = whiteR;
+      break;
+    case 16: col = yellowR;
+      break;
+  }
+
+  colorWipeR(col, delR);
+}
+
+void colorWipeR(uint32_t c, uint8_t wait)
+{
+
+  for (uint16_t i = 0; i < stripR.numPixels(); i++)
+  {
+    stripR.setPixelColor(i, c);
+    stripR.show();
+    delay(wait);
+  }
+}
+
+void MovingF()
+{
+
+  uint32_t col;
+  switch (CF) {
+    case 1: col = blueF;
+      break;
+    case 2: col = cyanF;
+      break;
+    case 3: col = darkBlueF;
+      break;
+    case 4: col = greenF;
+      break;
+    case 5: col = lightBlueF;
+      break;
+    case 6: col = lightGreenF;
+      break;
+    case 7: col = magentaF;
+      break;
+    case 8: col = maroonF;
+      break;
+    case 9: col = orangeF;
+      break;
+    case 10: col = parrotGreenF;
+      break;
+    case 11: col = pinkF;
+      break;
+    case 12: col = purpleF;
+      break;
+    case 13: col = redF;
+      break;
+    case 14: col = violetF;
+      break;
+    case 15: col = whiteF;
+      break;
+    case 16: col = yellowF;
+      break;
+  }
+  for (int i = 0; i < PIXEL_COUNT; i++)
+  {
+    //strip.setPixelColor(i, 255, 0, 0); // turn the "i"th pixel on     //strip.setPixelColor(n, color);
+    stripF.setPixelColor(i, col);
+    stripF.setPixelColor(i + 1, col); // turn the "i"th pixel on
+    //strip.setPixelColor(i + 1, 255, 0, 0); // turn the "i"th pixel on
+    stripF.show();
+    delay(delF); // wait 1/10th of a second
+    stripF.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
+    stripF.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
+    stripF.show();
+  }
+}
+
+void MovingR()
+{
+
+  uint32_t col2;
+  switch (CR) {
+    case 1: col2 = blueR;
+      break;
+    case 2: col2 = cyanR;
+      break;
+    case 3: col2 = darkBlueR;
+      break;
+    case 4: col2 = greenR;
+      break;
+    case 5: col2 = lightBlueR;
+      break;
+    case 6: col2 = lightGreenR;
+      break;
+    case 7: col2 = magentaR;
+      break;
+    case 8: col2 = maroonR;
+      break;
+    case 9: col2 = orangeR;
+      break;
+    case 10: col2 = parrotGreenR;
+      break;
+    case 11: col2 = pinkR;
+      break;
+    case 12: col2 = purpleR;
+      break;
+    case 13: col2 = redR;
+      break;
+    case 14: col2 = violetR;
+      break;
+    case 15: col2 = whiteR;
+      break;
+    case 16: col2 = yellowR;
+      break;
+  }
+  for (int i = 0; i < PIXEL_COUNT; i++)
+  {
+    //strip.setPixelColor(i, 255, 0, 0); // turn the "i"th pixel on     //strip.setPixelColor(n, color);
+    stripR.setPixelColor(i, col2);
+    stripR.setPixelColor(i + 1, col2); // turn the "i"th pixel on
+    //strip.setPixelColor(i + 1, 255, 0, 0); // turn the "i"th pixel on
+    stripR.show();
+    delay(delR); // wait 1/10th of a second
+    stripR.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
+    stripR.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
+    stripR.show();
+  }
+}
+
+
+// =================================================================================================== RAINBOW============
+void RainbowF(uint8_t wait)
+{
+  int BRF2 = 2.55 * BRF;
+  stripF.setBrightness(BRF2);
+  uint16_t i, j;
+
+  for (j = 0; j < 256; j++)
+  {
+    for (i = 0; i < stripF.numPixels(); i++)
+    {
+      stripF.setPixelColor(i, WheelF1((i + j) & 255));
+    }
+    stripF.show();
+    delay(wait);
+  }
+}
+
+uint32_t WheelF1(byte WheelPos)
+{
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85)
+  {
+    return stripF.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170)
+  {
+    WheelPos -= 85;
+    return stripF.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return stripF.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+void RainbowR(uint8_t wait)
+{
+  int BRR2 = 2.55 * BRR;
+  stripR.setBrightness(BRR2);
+  uint16_t i, j;
+
+  for (j = 0; j < 256; j++)
+  {
+    for (i = 0; i < stripR.numPixels(); i++)
+    {
+      stripR.setPixelColor(i, WheelR1((i + j) & 255));
+    }
+    stripR.show();
+    delay(wait);
+  }
+}
+
+uint32_t WheelR1(byte WheelPos)
+{
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85)
+  {
+    return stripR.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170)
+  {
+    WheelPos -= 85;
+    return stripR.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return stripR.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+//===================Rainbow Cycle================================
+void RainbowCycleF(uint8_t wait)
+{
+  int BRF2 = 2.55 * BRF;
+  stripF.setBrightness(BRF2);
+  uint16_t i, j;
+
+  //for (j = 0; j < 256 * 5; j++)
+  for (j = 256; j > 0; j--)
+  { // 5 cycles of all colors on wheel
+    for (i = 0; i < stripF.numPixels(); i++)
+    {
+      stripF.setPixelColor(i, WheelF2(((i * 256 / stripF.numPixels()) + j) & 255));
+    }
+    stripF.show();
+    delay(wait);
+  }
+}
+
+uint32_t WheelF2(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85) {
+    return stripF.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170) {
+    WheelPos -= 85;
+    return stripF.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return stripF.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+void RainbowCycleR(uint8_t wait)
+{
+  int BRR2 = 2.55 * BRR;
+  stripR.setBrightness(BRR2);
+  uint16_t i, j;
+
+  //for (j = 0; j < 256 * 5; j++)
+  for (j = 256; j > 0; j--)
+  { // 5 cycles of all colors on wheel
+    for (i = 0; i < stripR.numPixels(); i++)
+    {
+      stripR.setPixelColor(i, WheelR2(((i * 256 / stripR.numPixels()) + j) & 255));
+    }
+    stripR.show();
+    delay(wait);
+  }
+}
+
+uint32_t WheelR2(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85) {
+    return stripR.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170) {
+    WheelPos -= 85;
+    return stripR.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return stripR.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+
+
