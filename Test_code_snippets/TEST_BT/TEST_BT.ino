@@ -3,7 +3,7 @@
 
 int Soft_RX = 1;
 int Soft_TX = 0;
-int Reverse_Int = 8;
+int Reverse_Int = 6;
 
 
 
