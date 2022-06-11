@@ -45,23 +45,6 @@ uint32_t redF = stripF.Color(255, 0, 0);
 uint32_t violetF = stripF.Color(191, 0, 255);
 uint32_t whiteF = stripF.Color(255, 255, 255);
 uint32_t yellowF = stripF.Color(255, 255, 0);
-// Back====
-uint32_t blueR = stripR.Color(0, 0, 255);
-uint32_t cyanR = stripR.Color(0, 255, 255);
-uint32_t darkBlueR = stripR.Color(0, 128, 255);
-uint32_t greenR = stripR.Color(0, 255, 0);
-uint32_t lightBlueR = stripR.Color(0, 191, 255);
-uint32_t lightGreenR = stripR.Color(64, 255, 0);
-uint32_t magentaR = stripR.Color(255, 0, 255);
-uint32_t maroonR = stripR.Color(255, 0, 64);
-uint32_t orangeR = stripR.Color(255, 128, 0);
-uint32_t parrotGreenR = stripR.Color(191, 255, 0);
-uint32_t pinkR = stripR.Color(255, 0, 191);
-uint32_t purpleR = stripR.Color(128, 0, 255);
-uint32_t redR = stripR.Color(255, 0, 0);
-uint32_t violetR = stripR.Color(191, 0, 255);
-uint32_t whiteR = stripR.Color(255, 255, 255);
-uint32_t yellowR = stripR.Color(255, 255, 0);
 
 //======================== Temperature Sensors=========================================
 
@@ -86,7 +69,7 @@ int buzz = A5;
 int buzzen;
 
 //========================================================================================================
-int fas;
+int fas;  // Fan Status
 
 Nextion myNextion(nextion, 9600); //create a Nextion object named myNextion using the nextion serial port @ 9600bps
 
@@ -102,14 +85,9 @@ int Ignition_sw;
 //== led==
 int LED_en;
 int modeF;
-int modeR;
 int delF;
-int delR;
 int CF;
-int CR;
 int BRF;
-int BRR;
-int loc;
 
 
 void setup()
@@ -164,15 +142,10 @@ void loop()
 
   LED_en = myNextion.getComponentValue("LED.LEDen");  //enable led info
   modeF = myNextion.getComponentValue("LED.modeF");   //
-  modeR = myNextion.getComponentValue("LED.modeR");
   delF = myNextion.getComponentValue("LED.delF");
-  delR = myNextion.getComponentValue("LED.delR");
   CF = myNextion.getComponentValue("LED.CF");
-  CR = myNextion.getComponentValue("LED.CR");
   BRF = myNextion.getComponentValue("LED.BRF");
-  BRR = myNextion.getComponentValue("LED.BRR");
-  loc = myNextion.getComponentValue("LED.loc");
-
+  
   /*Serial.println(FogHalo_sw);
     Serial.println(FogHead_sw);
     Serial.println(AUX_sw);
@@ -355,11 +328,24 @@ void loop()
     //    Serial.println("Tcon OFF");
   }
   //==============================================================================================LED  CODE========================
-  LED();
-  //=====================================================================================================================================
-  Serial.println("End of loop");
-}
+    if (LED_en == 1)
+  {
+    switch (modeF)
+    {
+      case 0: Single();
+        break;
+      case 1: Moving();
+        break;
+      case 2: Rainbow();
+        break;
+      case 3: RainbowCycle();
+        break;
+    }
+  }
 
+  //=====================================================================================================================================
+//  Serial.println("End of loop");
+}
 
 int UsensR()
 {
@@ -493,49 +479,12 @@ ret:
 
 //===================================================================================================================LED        LED==========================================================
 
-//=========================================================== LED =================================================================
-void LED()
-{
-  if (LED_en == 1)
-  {
-    FW();
-    BK();
-  }
-}
-
-void FW()
-{
-  switch (modeF) {
-    case 0: SingleF();
-      break;
-    case 1: MovingF();
-      break;
-    case 2: RainbowF(delF);
-      break;
-    case 3: RainbowCycleF(delF);
-      break;
-  }
-}
-
-void BK()
-{
-  switch (modeR) {
-    case 0: SingleR();
-      break;
-    case 1: MovingR();
-      break;
-    case 2: RainbowR(delR);
-      break;
-    case 3: RainbowCycleR(delR);
-      break;
-  }
-}
-
-void SingleF()
+//======================= Single Mode==================================
+void Single()
 {
   int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
-
+  stripR.setBrightness(BRF2);
   uint32_t col;
   switch (CF) {
     case 1: col = blueF;
@@ -572,78 +521,22 @@ void SingleF()
       break;
   }
 
-  colorWipeF(col, delF);
-}
-//======================= For Single Mode==================================
-void colorWipeF(uint32_t c, uint8_t wait)
-{
-
-  for (uint16_t i = 0; i < stripF.numPixels(); i++)
+  for (uint16_t i = 0; i < PIXEL_COUNT; i++)
   {
-    stripF.setPixelColor(i, c);
+    stripF.setPixelColor(i, col);
+    stripR.setPixelColor(i, col);
     stripF.show();
-    delay(wait);
-  }
-}
-
-void SingleR()
-{
-  int BRR2 = BRR * 2.55;
-  stripR.setBrightness(BRR2);
-
-  uint32_t col;
-  switch (CR) {
-    case 1: col = blueR;
-      break;
-    case 2: col = cyanR;
-      break;
-    case 3: col = darkBlueR;
-      break;
-    case 4: col = greenR;
-      break;
-    case 5: col = lightBlueR;
-      break;
-    case 6: col = lightGreenR;
-      break;
-    case 7: col = magentaR;
-      break;
-    case 8: col = maroonR;
-      break;
-    case 9: col = orangeR;
-      break;
-    case 10: col = parrotGreenR;
-      break;
-    case 11: col = pinkR;
-      break;
-    case 12: col = purpleR;
-      break;
-    case 13: col = redR;
-      break;
-    case 14: col = violetR;
-      break;
-    case 15: col = whiteR;
-      break;
-    case 16: col = yellowR;
-      break;
-  }
-
-  colorWipeR(col, delR);
-}
-
-void colorWipeR(uint32_t c, uint8_t wait)
-{
-
-  for (uint16_t i = 0; i < stripR.numPixels(); i++)
-  {
-    stripR.setPixelColor(i, c);
     stripR.show();
-    delay(wait);
+    delay(delF);
   }
 }
+//======================= Moving ==================================
 
-void MovingF()
+void Moving()
 {
-
+  int BRF2 = BRF * 2.55;
+  stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRF2);
   uint32_t col;
   switch (CF) {
     case 1: col = blueF;
@@ -679,202 +572,84 @@ void MovingF()
     case 16: col = yellowF;
       break;
   }
+
   for (int i = 0; i < PIXEL_COUNT; i++)
   {
-    //strip.setPixelColor(i, 255, 0, 0); // turn the "i"th pixel on     //strip.setPixelColor(n, color);
     stripF.setPixelColor(i, col);
-    stripF.setPixelColor(i + 1, col); // turn the "i"th pixel on
-    //strip.setPixelColor(i + 1, 255, 0, 0); // turn the "i"th pixel on
+    stripR.setPixelColor(i, col);
+    stripF.setPixelColor(i + 1, col); // turn the "i+1"th pixel on
+    stripR.setPixelColor(i + 1, col); // turn the "i"th pixel on
+    stripF.setPixelColor(i + 2, col); // turn the "i+1"th pixel onm
+    stripR.setPixelColor(i + 2, col); // turn the "i+1"th pixel on
     stripF.show();
+    stripR.show();
     delay(delF); // wait 1/10th of a second
     stripF.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
-    stripF.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
-    stripF.show();
-  }
-}
-
-void MovingR()
-{
-
-  uint32_t col2;
-  switch (CR) {
-    case 1: col2 = blueR;
-      break;
-    case 2: col2 = cyanR;
-      break;
-    case 3: col2 = darkBlueR;
-      break;
-    case 4: col2 = greenR;
-      break;
-    case 5: col2 = lightBlueR;
-      break;
-    case 6: col2 = lightGreenR;
-      break;
-    case 7: col2 = magentaR;
-      break;
-    case 8: col2 = maroonR;
-      break;
-    case 9: col2 = orangeR;
-      break;
-    case 10: col2 = parrotGreenR;
-      break;
-    case 11: col2 = pinkR;
-      break;
-    case 12: col2 = purpleR;
-      break;
-    case 13: col2 = redR;
-      break;
-    case 14: col2 = violetR;
-      break;
-    case 15: col2 = whiteR;
-      break;
-    case 16: col2 = yellowR;
-      break;
-  }
-  for (int i = 0; i < PIXEL_COUNT; i++)
-  {
-    //strip.setPixelColor(i, 255, 0, 0); // turn the "i"th pixel on     //strip.setPixelColor(n, color);
-    stripR.setPixelColor(i, col2);
-    stripR.setPixelColor(i + 1, col2); // turn the "i"th pixel on
-    //strip.setPixelColor(i + 1, 255, 0, 0); // turn the "i"th pixel on
-    stripR.show();
-    delay(delR); // wait 1/10th of a second
     stripR.setPixelColor(i, 0, 0, 0); // // turn the "i"th pixel off
+    stripF.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
     stripR.setPixelColor(i + 1, 0, 0, 0); // // turn the "i"th pixel off
+    stripF.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
+    stripR.setPixelColor(i + 2, 0, 0, 0); // // turn the "i"th pixel off
+    stripF.show();
     stripR.show();
   }
 }
-
 
 // =================================================================================================== RAINBOW============
-void RainbowF(uint8_t wait)
+void Rainbow()
 {
-  int BRF2 = 2.55 * BRF;
+  int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRF2);
   uint16_t i, j;
 
   for (j = 0; j < 256; j++)
   {
-    for (i = 0; i < stripF.numPixels(); i++)
+    for (i = 0; i < PIXEL_COUNT; i++)
     {
-      stripF.setPixelColor(i, WheelF1((i + j) & 255));
+      stripF.setPixelColor(i, Wheel((i + j) & 255));
+      stripR.setPixelColor(i, Wheel((i + j) & 255));
     }
     stripF.show();
-    delay(wait);
-  }
-}
-
-uint32_t WheelF1(byte WheelPos)
-{
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85)
-  {
-    return stripF.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170)
-  {
-    WheelPos -= 85;
-    return stripF.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return stripF.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
-void RainbowR(uint8_t wait)
-{
-  int BRR2 = 2.55 * BRR;
-  stripR.setBrightness(BRR2);
-  uint16_t i, j;
-
-  for (j = 0; j < 256; j++)
-  {
-    for (i = 0; i < stripR.numPixels(); i++)
-    {
-      stripR.setPixelColor(i, WheelR1((i + j) & 255));
-    }
     stripR.show();
-    delay(wait);
+    delay(delF);
   }
-}
-
-uint32_t WheelR1(byte WheelPos)
-{
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85)
-  {
-    return stripR.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170)
-  {
-    WheelPos -= 85;
-    return stripR.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return stripR.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
 //===================Rainbow Cycle================================
-void RainbowCycleF(uint8_t wait)
+void RainbowCycle()
 {
-  int BRF2 = 2.55 * BRF;
+  int BRF2 = BRF * 2.55;
   stripF.setBrightness(BRF2);
+  stripR.setBrightness(BRF2);
   uint16_t i, j;
 
-  //for (j = 0; j < 256 * 5; j++)
+  //for (j = 0; j < 256 * 5; j++)// 5 cycles of all colors on wheel
   for (j = 256; j > 0; j--)
-  { // 5 cycles of all colors on wheel
-    for (i = 0; i < stripF.numPixels(); i++)
+  {
+    for (i = 0; i < PIXEL_COUNT; i++)
     {
-      stripF.setPixelColor(i, WheelF2(((i * 256 / stripF.numPixels()) + j) & 255));
+      stripF.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
+      stripR.setPixelColor(i, Wheel(((i * 256 / PIXEL_COUNT) + j) & 255));
     }
     stripF.show();
-    delay(wait);
+    stripR.show();
+    delay(delF);
   }
 }
 
-uint32_t WheelF2(byte WheelPos) {
+uint32_t Wheel(byte WheelPos)
+{
   WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
+  if (WheelPos < 85)
+  {
     return stripF.Color(255 - WheelPos * 3, 0, WheelPos * 3);
   }
-  if (WheelPos < 170) {
+  if (WheelPos < 170)
+  {
     WheelPos -= 85;
     return stripF.Color(0, WheelPos * 3, 255 - WheelPos * 3);
   }
   WheelPos -= 170;
   return stripF.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
-void RainbowCycleR(uint8_t wait)
-{
-  int BRR2 = 2.55 * BRR;
-  stripR.setBrightness(BRR2);
-  uint16_t i, j;
-
-  //for (j = 0; j < 256 * 5; j++)
-  for (j = 256; j > 0; j--)
-  { // 5 cycles of all colors on wheel
-    for (i = 0; i < stripR.numPixels(); i++)
-    {
-      stripR.setPixelColor(i, WheelR2(((i * 256 / stripR.numPixels()) + j) & 255));
-    }
-    stripR.show();
-    delay(wait);
-  }
-}
-
-uint32_t WheelR2(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
-    return stripR.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170) {
-    WheelPos -= 85;
-    return stripR.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return stripR.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
-
-
