@@ -20,7 +20,8 @@ void loop()
   digitalWrite(Reverse_Int, LOW);
   if (digitalRead(Reverse_Int) == HIGH)
   {
-    mySerial.print(1);
+    mySerial.flush();
+    mySerial.print(char(48));
     while (digitalRead(Reverse_Int) == HIGH)
     {
       //delay(200);
@@ -35,6 +36,7 @@ void loop()
   }
   else
   {
+    mySerial.flush();
     mySerial.print(0);
     while (digitalRead(Reverse_Int) == LOW)
     {
