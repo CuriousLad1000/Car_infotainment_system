@@ -23,13 +23,13 @@ int Rel_switch_tab = 16;
 //======== BLUETOOTH REVERSE SIGNAL ============================
 int Soft_RX = 1;
 int Soft_TX = 0;
-int Reverse_Int = 8;
+int Reverse_Int = 6;
 SoftwareSerial mySerial(Soft_RX, Soft_TX); // RX, TX
 
 //================== ULTRA SONIC ================================
-const int trigPin = 18;
-const int echoPin = 17;
-int BuzPin_vcc = 19;
+const int trigPin = 7;
+const int echoPin = 8;
+int BuzPin_vcc = 10;
 
 long microsecondsToCentimeters(long microseconds)
 {
@@ -51,6 +51,7 @@ void ultra()
   duration = pulseIn(echoPin, HIGH);
 
   cm = microsecondsToCentimeters(duration);
+  lcd.clear();
   lcd.setCursor(0, 1);
   lcd.print("Distance: ");
   lcd.setCursor(9, 1);
@@ -69,13 +70,15 @@ void ultra()
 //===========Temp_Sens_DHT22 ===================================
 int Temp_sens_pin = 9;
 int fan_stat = 0;
-float Temp_LT = 31.00;                    //  temperature in deg Celcius above which fan activates
+float Temp_LT = 32.00;                    //  temperature in deg Celcius above which fan activates
 DHT dht(Temp_sens_pin, DHTTYPE);
 
 void Temp_sens()
 {
   delay(1000);
   float t = dht.readTemperature();
+  float h = dht.readHumidity();
+  float hic = dht.computeHeatIndex(t, h, false); // Compute heat index in Celsius (isFahreheit = false)
   digitalWrite(Rel_pow_tab, LOW); //  CHARGING TAB ON
   if (t > Temp_LT)
   {
@@ -91,7 +94,36 @@ void Temp_sens()
     fan_stat = 0;
     digitalWrite(Rel_fan, HIGH); // FAN OFF
   }
-  Temp_disp();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("T:");
+  lcd.print(t);
+  lcd.setCursor(6, 0);
+  lcd.print((char)223);
+  lcd.print("C");
+  lcd.setCursor(9, 0);
+  lcd.print("H:");
+  lcd.print(h);
+  lcd.setCursor(15, 0);
+  lcd.print("%");
+  lcd.setCursor(0, 1);
+  lcd.print("Fan:");
+  if (fan_stat == 0)
+  {
+    lcd.print("OFF");
+  }
+  else
+  {
+    lcd.print("ON");
+    lcd.setCursor(6, 1);
+    lcd.print(" ");
+  }
+  lcd.setCursor(8, 1);
+  lcd.print("Hi:");
+  lcd.print(hic);
+  lcd.setCursor(15, 1);
+  lcd.print((char)223);
+  lcd.print("C");
 }
 
 void Temp_disp()
@@ -103,6 +135,7 @@ void Temp_disp()
     return;
   }
   float hic = dht.computeHeatIndex(t, h, false); // Compute heat index in Celsius (isFahreheit = false)
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("T:");
   lcd.print(t);
@@ -148,10 +181,10 @@ void Temp_init()
   else
   {
     fan_stat = 0;
-    digitalWrite(Rel_pow_tab, LOW); //  CHARGING TAB ON
-    digitalWrite(Rel_fan, HIGH); // FAN OFF
+    digitalWrite(Rel_pow_tab, LOW); //  CHARGING TAB ON   RELAY 2
+    digitalWrite(Rel_fan, HIGH); // FAN OFF               RELAY 1
 
-    digitalWrite(Rel_switch_tab, LOW); // POWER ON TAB
+    digitalWrite(Rel_switch_tab, LOW); // POWER ON TAB  RELAY 3
     delay(2000);                       // POWER ON TAB
     digitalWrite(Rel_switch_tab, HIGH); // POWER ON TAB
   }
@@ -166,6 +199,9 @@ void setup()
   pinMode(Rel_fan, OUTPUT);
   pinMode(Rel_pow_tab, OUTPUT);
   pinMode(Rel_switch_tab, OUTPUT);
+  digitalWrite(Rel_fan, HIGH);      // TURN OFF FAN RELAY
+  digitalWrite(Rel_switch_tab, HIGH);  // TURN OFF SWITCH TAB RELAY
+  digitalWrite(Rel_pow_tab, HIGH);  // TURN OFF POWER TAB RELAY
   pinMode(BuzPin_vcc, OUTPUT);
   pinMode(Reverse_Int, OUTPUT);
   digitalWrite(Reverse_Int, LOW);
@@ -183,7 +219,6 @@ void loop()
     mySerial.print(1);
     while (digitalRead(Reverse_Int) == HIGH)
     {
-      Temp_sens();
       ultra();
     }
   }
