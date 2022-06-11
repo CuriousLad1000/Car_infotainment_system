@@ -6,30 +6,30 @@
 #include <SoftwareSerial.h>
 
 //==========  LCD  =================================================
-int RS = 12;
-int En = 11;
-int D4 = 5;
-int D5 = 4;
-int D6 = 3;
-int D7 = 2;
+int RS = 2;
+int En = 3;
+int D4 = 4;
+int D5 = 5;
+int D6 = 6;
+int D7 = 7;
 LiquidCrystal lcd(RS, En, D4, D5, D6, D7);
 
 //============ RELAY ===========================================
-int Rel_fan = 14;
-int Rel_pow_tab = 15;
-int Rel_switch_tab = 16;
-
+int Rel_fan = 11;
+int Rel_pow_tab = 10;
+int Rel_switch_tab = 9;
+int Rel_pow_amp = 12;
 
 //======== BLUETOOTH REVERSE SIGNAL ============================
-int Soft_RX = 1;
-int Soft_TX = 0;
-int Reverse_Int = 6;
+int Soft_RX = 17;
+int Soft_TX = 18;
+int Reverse_Int = 19;
 SoftwareSerial mySerial(Soft_RX, Soft_TX); // RX, TX
 
 //================== ULTRA SONIC ================================
-const int trigPin = 7;
-const int echoPin = 8;
-int BuzPin_vcc = 10;
+const int trigPin = 14;
+const int echoPin = 15;
+int BuzPin_vcc = 13;
 
 long microsecondsToCentimeters(long microseconds)
 {
@@ -66,9 +66,10 @@ void ultra()
     digitalWrite(BuzPin_vcc, LOW);
   }
 }
-
+//===========Temp_Sens_DS18B20 ===================================
+int Temp_sens_ds18b_pin = 16;
 //===========Temp_Sens_DHT22 ===================================
-int Temp_sens_pin = 9;
+int Temp_sens_pin = 8;
 int fan_stat = 0;
 float Temp_LT = 32.00;                    //  temperature in deg Celcius above which fan activates
 DHT dht(Temp_sens_pin, DHTTYPE);
@@ -83,7 +84,7 @@ void Temp_sens()
   if (t > Temp_LT)
   {
     digitalWrite(BuzPin_vcc, HIGH);
-    delay(500);
+    delay(25);
     digitalWrite(BuzPin_vcc, LOW);
     delay(100);
     fan_stat = 1;
@@ -199,12 +200,12 @@ void setup()
   pinMode(Rel_fan, OUTPUT);
   pinMode(Rel_pow_tab, OUTPUT);
   pinMode(Rel_switch_tab, OUTPUT);
+  pinMode(BuzPin_vcc, OUTPUT);
+  pinMode(Reverse_Int, INPUT);
   digitalWrite(Rel_fan, HIGH);      // TURN OFF FAN RELAY
   digitalWrite(Rel_switch_tab, HIGH);  // TURN OFF SWITCH TAB RELAY
   digitalWrite(Rel_pow_tab, HIGH);  // TURN OFF POWER TAB RELAY
-  pinMode(BuzPin_vcc, OUTPUT);
-  pinMode(Reverse_Int, OUTPUT);
-  digitalWrite(Reverse_Int, LOW);
+  digitalWrite(Reverse_Int, HIGH);
   mySerial.begin(9600);
   lcd.begin(16, 2); // set up the LCD's number of columns and rows:
   dht.begin();
@@ -214,6 +215,7 @@ void setup()
 //===========================  LOOP  ===================================================================  LOOP  ====================  LOOP  ===============================
 void loop()
 {
+
   if (digitalRead(Reverse_Int) == LOW)
   {
     mySerial.print(1);
