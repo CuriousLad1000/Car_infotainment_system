@@ -3,7 +3,7 @@
 
 #include "DHT.h"
 
-#define DHTPIN 9     // what pin we're connected to
+#define DHTPIN 8     // what pin we're connected to
 
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 

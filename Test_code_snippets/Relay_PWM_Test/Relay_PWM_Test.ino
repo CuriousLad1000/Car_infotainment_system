@@ -1,7 +1,7 @@
-int Rel1 = 14;
-int Rel2 = 15;
-int Rel3 = 16;
-int Rel4 = 17;
+int Rel1 = 9;
+int Rel2 = 10;
+int Rel3 = 11;
+int Rel4 = 12;
 void setup()
 {
   // put your setup code here, to run once:

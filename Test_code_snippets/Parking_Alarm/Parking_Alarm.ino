@@ -13,9 +13,9 @@
 int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
 
-#define triggerpin 10 //connect trigger pin of  ultrasonic sensor to 10th pin of arduino uno
-#define echopin 11  //connect echo pin of  ultrasonic sensor to 11th pin of arduino uno
-#define tonePin 12    //Tone 
+#define triggerpin 14 //connect trigger pin of  ultrasonic sensor to 10th pin of arduino uno
+#define echopin 15  //connect echo pin of  ultrasonic sensor to 11th pin of arduino uno
+#define tonePin 13    //Tone 
 
 long duration;// establish variables for duration 
 long distanceCm, distance;// establish variables for distance

@@ -1,9 +1,9 @@
 
 #include <SoftwareSerial.h>
 
-int Soft_RX = 1;
-int Soft_TX = 0;
-int Reverse_Int = 6;
+int Soft_RX = 17;
+int Soft_TX = 18;
+int Reverse_Int = 19;
 
 
 

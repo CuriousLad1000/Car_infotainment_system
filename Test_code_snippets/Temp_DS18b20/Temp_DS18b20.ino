@@ -1,7 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-int Temp_sens_pin = 9;
+int Temp_sens_pin = 16;
 
 
 
