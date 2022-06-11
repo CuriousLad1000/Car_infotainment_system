@@ -1,0 +1,18 @@
+
+
+fan auto enable/disable (Enable Temperature Control)  -------- eprom
+
+temp control limit   ----------- eprom
+
+enable/disable power saver ------- eprom
+set power saver time -------- eprom
+Reboot MC
+
+set date and time
+
+show date time on power saver screen  ---- eprom
+
+show temp on power saver screen  ------ eprom
+show ping on power saver screen  ------ eprom
+
+save/cancel settings to eprom
