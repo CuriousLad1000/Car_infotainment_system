@@ -214,10 +214,10 @@ void setup()
 //===========================  LOOP  ===================================================================  LOOP  ====================  LOOP  ===============================
 void loop()
 {
-  if (digitalRead(Reverse_Int) == HIGH)
+  if (digitalRead(Reverse_Int) == LOW)
   {
     mySerial.print(1);
-    while (digitalRead(Reverse_Int) == HIGH)
+    while (digitalRead(Reverse_Int) == LOW)
     {
       ultra();
     }
@@ -225,7 +225,7 @@ void loop()
   else
   {
     mySerial.print(0);
-    while (digitalRead(Reverse_Int) == LOW)
+    while (digitalRead(Reverse_Int) == HIGH)
     {
       Temp_sens();
     }
