@@ -56,7 +56,7 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 
 #### 
 
-## Device pics (for more, refer to wiki)
+## Device pics (for more, please refer to wiki)
 
 *please excuse me for bad quality pics and messy workbench… In those times I was not very good at presenting kind of person.*
 
