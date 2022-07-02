@@ -172,4 +172,4 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 <br/>
 <br/>
 
-> For more detailed pics please see wiki.
+> For more detailed pics please see wiki..
