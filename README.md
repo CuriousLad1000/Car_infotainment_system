@@ -65,7 +65,7 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 ### Testing individual components
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/9d388ebacfb8417c4566902f714d3e09.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/9d388ebacfb8417c4566902f714d3e09.jpeg">
 </p>
 
 <!--- <p align="Center"> <i>"note: logo copyright belongs to Micro-Star INT'L CO., LTD" </i></p> --->
@@ -76,13 +76,13 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 ### Assembling ver. 1 system.
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/f7eedbf5f4ca087268f1d76b12a5db2a.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/f7eedbf5f4ca087268f1d76b12a5db2a.jpeg">
 </p>
 
 <br/>
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/171357ff35640d9dc3c4047a2f29333c.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/171357ff35640d9dc3c4047a2f29333c.jpeg">
 </p>
 
 <br/>
@@ -92,13 +92,13 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 ### Version 1.0 completed
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/02dcefdb7e5eea76cb40dc7a3868d732.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/02dcefdb7e5eea76cb40dc7a3868d732.jpeg">
 </p>
 
 <br/>
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/e37f7464d839af581979ec15eb30d827.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/e37f7464d839af581979ec15eb30d827.jpeg">
 </p>
 
 <br/>
@@ -107,13 +107,13 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 ### Upgrading to ver. 2.0
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/af5d03618712d2e5069a821a6ada92b9.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/af5d03618712d2e5069a821a6ada92b9.jpeg">
 </p>
 
 <br/>
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/4266169d7aa75448afd3d20935274a08.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/4266169d7aa75448afd3d20935274a08.jpeg">
 </p>
 
 <br/>
@@ -123,13 +123,13 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/5271e4fcdbb2cffbff6aa26edf78f724.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/5271e4fcdbb2cffbff6aa26edf78f724.jpeg">
 </p>
 
 <br/>
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/d6f7f290c4efc46ee3d61d01c9a8625c.jpeg">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/d6f7f290c4efc46ee3d61d01c9a8625c.jpeg">
 </p>
 
 <br/>
@@ -141,7 +141,7 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 **Home Screen**
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/eaf3e9bba1395512a6107e3924d26f5d.png">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/eaf3e9bba1395512a6107e3924d26f5d.png">
 </p>
 
 <br/>
@@ -150,7 +150,7 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 **Ignition switch**
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/a88818149587a8f79bd5a79bc5407ab1.png">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/a88818149587a8f79bd5a79bc5407ab1.png">
 </p>
 
 <br/>
@@ -159,14 +159,14 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 **Ambient lights control**
 
 <p float="left">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/f5322579174f9958e9a22e8f3bbb16b5.png">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/03946da73d038f187458a8008e1b53a4.png">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/f5322579174f9958e9a22e8f3bbb16b5.png">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/03946da73d038f187458a8008e1b53a4.png">
 </p>
 
 **Reverse sensor display**
 
 <p align="Center">
-  <img src="/osama.tasneem/Car_infotainment_system/wiki/raw/images/52b4b8d50843daac27cac4ed1621e7ac.png">
+  <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/52b4b8d50843daac27cac4ed1621e7ac.png">
 </p>
 
 <br/>
