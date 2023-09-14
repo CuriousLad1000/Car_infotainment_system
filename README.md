@@ -158,7 +158,7 @@ Build an in-vehicle digital infotainment system that provide car telematics, dia
 
 **Ambient lights control**
 
-<p float="left">
+<p float="Center">
   <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/f5322579174f9958e9a22e8f3bbb16b5.png">
   <img src="https://raw.githubusercontent.com/wiki/CuriousLad1000/Car_infotainment_system/images/03946da73d038f187458a8008e1b53a4.png">
 </p>
